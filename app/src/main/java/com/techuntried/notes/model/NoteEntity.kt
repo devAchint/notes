@@ -8,6 +8,6 @@ import androidx.room.PrimaryKey
 data class NoteEntity(
     @PrimaryKey(autoGenerate = true)
     val id:Long,
-    @ColumnInfo("")
-    val folderName:String
+    @ColumnInfo("title")
+    val title:String
 )
