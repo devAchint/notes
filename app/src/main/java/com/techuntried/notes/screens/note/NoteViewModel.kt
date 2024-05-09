@@ -21,19 +21,25 @@ class NoteViewModel @Inject constructor(
 ) :
     ViewModel() {
 
+    private val _noteId = MutableStateFlow<Long>(-1)
+    val noteId: StateFlow<Long>
+        get() =
+            _noteId
+
+
     private val _note = MutableStateFlow<NoteEntity?>(null)
     val note: StateFlow<NoteEntity?>
-        get() =
-            _note
+        get() = _note
 
     init {
         val id = savedStateHandle.get<Long>("id")
         if (id != null && id != -1L) {
-            getNoteById(id)
+            _noteId.value = id
+            getNoteById(noteId.value)
         }
     }
 
-    fun getNoteById(id: Long) {
+    private fun getNoteById(id: Long) {
         viewModelScope.launch {
             _note.value = notesRepository.getNoteById(id)
         }
@@ -46,11 +52,16 @@ class NoteViewModel @Inject constructor(
     }
 
     fun deleteNote() {
-        val id = savedStateHandle.get<Long>("id")
-        if (id != null)
-            viewModelScope.launch {
-                notesRepository.deleteNote(id)
-            }
+        viewModelScope.launch {
+            if (noteId.value != -1L)
+                notesRepository.deleteNote(noteId.value)
+        }
+    }
+
+    fun updateNote(noteTitle: String, noteDes: String) {
+        viewModelScope.launch {
+            notesRepository.updateNote(NoteEntity(noteId.value, noteTitle, noteDes))
+        }
     }
 
 

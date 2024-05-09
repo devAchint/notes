@@ -9,5 +9,8 @@ data class NoteEntity(
     @PrimaryKey(autoGenerate = true)
     val id:Long,
     @ColumnInfo("title")
-    val title:String
+    val title:String,
+    @ColumnInfo("description")
+    val description:String,
+
 )

@@ -1,6 +1,8 @@
 package com.techuntried.notes.screens.note
 
+import android.widget.Toast
 import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
@@ -9,6 +11,8 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material3.Button
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -17,6 +21,7 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
+import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -43,17 +48,23 @@ fun NoteScreen(popBackStack: () -> Boolean) {
         mutableStateOf(true)
     }
     val note = viewModel.note.collectAsState()
+    var noteTitle by remember {
+        mutableStateOf("")
+    }
     var noteDes by remember {
         mutableStateOf("")
     }
+
+
     if (note.value != null) {
         isNewNote = false
         LaunchedEffect(key1 = Unit) {
-            noteDes = note.value!!.title
+            noteDes = note.value!!.description
+            noteTitle = note.value!!.title
         }
     }
     Scaffold(topBar = {
-        NoteScreenToolbar {
+        NoteScreenToolbar(isNewNote, popBackStack = { popBackStack() }) {
             viewModel.deleteNote()
             popBackStack()
         }
@@ -61,30 +72,57 @@ fun NoteScreen(popBackStack: () -> Boolean) {
         Column(
             modifier = Modifier
                 .fillMaxSize()
-                .padding(it),
-            verticalArrangement = Arrangement.SpaceBetween,
-            horizontalAlignment = Alignment.CenterHorizontally
+                .padding(it)
+                .padding(16.dp),
+            horizontalAlignment = Alignment.CenterHorizontally,
+            verticalArrangement = Arrangement.Center
         ) {
             TextField(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(16.dp)
-                    .clip(RoundedCornerShape(12.dp))
-                    .border(1.dp, color = Color.Black),
-
+                    .padding(bottom = 8.dp),
+                placeholder = { Text(text = "Title here") },
+                shape = RoundedCornerShape(12.dp),
+                value = noteTitle,
+                onValueChange = {
+                    noteTitle = it
+                },
+                colors = TextFieldDefaults.textFieldColors(
+                    unfocusedIndicatorColor = Color.Transparent,
+                    focusedIndicatorColor = Color.Transparent
+                )
+            )
+            TextField(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(200.dp)
+                    .padding(bottom = 8.dp),
+                placeholder = { Text(text = "Note here") },
+                shape = RoundedCornerShape(12.dp),
                 value = noteDes,
                 onValueChange = {
                     noteDes = it
-                })
-
+                },
+                colors = TextFieldDefaults.textFieldColors(
+                    unfocusedIndicatorColor = Color.Transparent,
+                    focusedIndicatorColor = Color.Transparent
+                )
+            )
+            val context = LocalContext.current
             Button(
                 modifier = Modifier
                     .fillMaxWidth()
                     .height(48.dp)
                     .clip(RoundedCornerShape(12.dp)),
                 onClick = {
-                    if (isNewNote) {
-                        viewModel.insertNote(NoteEntity(0, noteDes))
+                    if (noteDes.isBlank() && noteTitle.isBlank()) {
+                        Toast.makeText(context, "empty note", Toast.LENGTH_SHORT).show()
+                    } else {
+                        if (isNewNote) {
+                            viewModel.insertNote(NoteEntity(0, noteTitle, noteDes))
+                        } else {
+                            viewModel.updateNote(noteTitle, noteDes)
+                        }
                         popBackStack()
                     }
                 }) {
@@ -98,19 +136,32 @@ fun NoteScreen(popBackStack: () -> Boolean) {
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun NoteScreenToolbar(deleteNote: () -> Unit) {
+fun NoteScreenToolbar(
+    isNewNote: Boolean,
+    popBackStack: () -> Unit,
+    deleteNote: () -> Unit
+) {
     val context = LocalContext.current
     TopAppBar(
         title = { Text(text = "Notes") },
-        actions = {
-
+        navigationIcon = {
             IconButton(
                 onClick = {
-                    deleteNote()
-                })
-            {
-                Icon(Icons.Default.Delete, "")
+                    popBackStack()
+                }
+            ) {
+                Icon(Icons.AutoMirrored.Filled.ArrowBack, "")
             }
+        },
+        actions = {
+            if (!isNewNote)
+                IconButton(
+                    onClick = {
+                        deleteNote()
+                    })
+                {
+                    Icon(Icons.Default.Delete, "")
+                }
 
         }
     )

@@ -26,5 +26,9 @@ class NotesRepository @Inject constructor(private val noteDao: NoteDao) {
         noteDao.deleteNote(id)
     }
 
+    suspend fun updateNote(noteEntity: NoteEntity) {
+        noteDao.updateNote(noteEntity)
+    }
+
 }
 

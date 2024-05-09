@@ -5,6 +5,7 @@ import com.techuntried.notes.model.NoteEntity
 import androidx.room.Dao
 import androidx.room.Insert
 import androidx.room.Query
+import androidx.room.Update
 import kotlinx.coroutines.flow.Flow
 
 
@@ -21,6 +22,8 @@ interface NoteDao {
 
     @Query("SELECT * FROM notes where id=:id")
     suspend fun getNoteById(id: Long): NoteEntity
+    @Update
+    suspend fun updateNote(noteEntity: NoteEntity)
 
 }
 

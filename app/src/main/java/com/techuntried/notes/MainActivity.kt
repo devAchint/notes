@@ -3,6 +3,9 @@ package com.techuntried.notes
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
+import androidx.compose.animation.AnimatedContentTransitionScope
+import androidx.compose.animation.core.tween
+import androidx.compose.animation.fadeIn
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.runtime.Composable
 import androidx.navigation.NavHostController
@@ -19,7 +22,6 @@ import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
-    @OptIn(ExperimentalMaterial3Api::class)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {
@@ -31,37 +33,24 @@ class MainActivity : ComponentActivity() {
     }
 }
 
-//@OptIn(ExperimentalMaterial3Api::class)
-//@Composable
-//fun Toolbar(navController: NavHostController) {
-//    val destination: NavDestination? =
-//        navController.currentBackStackEntryAsState().value?.destination
-//    val route = destination?.route
-//    val title = when (route) {
-//        Screens.HomeScreen.route -> "Home"
-//        Screens.NoteScreen.route -> "Add note"
-//        else -> ""
-//    }
-//    val context = LocalContext.current
-//    TopAppBar(
-//        title = { Text(text = title) },
-//        actions = {
-//            if (route == Screens.NoteScreen.route) {
-//                IconButton(
-//                    onClick = {})
-//                {
-//                    Icon(Icons.Default.Delete, "")
-//                }
-//            }
-//
-//        }
-//    )
-//}
-
 @Composable
 fun App(navController: NavHostController) {
     NavHost(navController = navController, startDestination = Screens.HomeScreen.route) {
-        composable(Screens.HomeScreen.route) {
+        composable(Screens.HomeScreen.route,
+            enterTransition = {
+                return@composable fadeIn(tween(1000))
+            },
+            exitTransition = {
+                return@composable slideOutOfContainer(
+                    AnimatedContentTransitionScope.SlideDirection.Start, tween(700)
+                )
+            }, popEnterTransition = {
+                return@composable slideIntoContainer(
+                    AnimatedContentTransitionScope.SlideDirection.End, tween(700)
+                )
+            }
+        )
+        {
             HomeScreen(
                 onAddClick =
                 {
@@ -74,14 +63,24 @@ fun App(navController: NavHostController) {
             )
         }
 
-        composable(Screens.NoteScreen.route, arguments = listOf(
-            navArgument("id") {
-                type = NavType.LongType
-                defaultValue = -1L
-            }
-        )) {
+        composable(Screens.NoteScreen.route,
+            enterTransition = {
+                return@composable slideIntoContainer(
+                    AnimatedContentTransitionScope.SlideDirection.Start, tween(700)
+                )
+            },
+            popExitTransition = {
+                return@composable slideOutOfContainer(
+                    AnimatedContentTransitionScope.SlideDirection.End, tween(700)
+                )
+            },
+            arguments = listOf(
+                navArgument("id") {
+                    type = NavType.LongType
+                    defaultValue = -1L
+                }
+            )) {
             NoteScreen { navController.popBackStack() }
         }
     }
 }
-
