@@ -24,9 +24,11 @@ import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
+import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Alignment
@@ -44,6 +46,7 @@ import androidx.navigation.NavDestination
 import androidx.navigation.NavHostController
 import com.techuntried.notes.model.NoteEntity
 import com.techuntried.notes.navigation.Screens
+import com.techuntried.notes.ui.theme.mainColor
 import java.util.Locale
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -84,6 +87,8 @@ fun HomeScreen(onAddClick: () -> Unit, onNoteClick: (id: Long) -> Unit) {
                 modifier = Modifier
                     .align(Alignment.BottomEnd)
                     .padding(16.dp),
+                containerColor = MaterialTheme.colorScheme.primary,
+                contentColor = MaterialTheme.colorScheme.secondary
             ) {
                 Icon(imageVector = Icons.Filled.Add, contentDescription = "")
             }
@@ -99,6 +104,9 @@ fun Toolbar() {
         title = {
             Text(text = "Home")
         },
+        colors = TopAppBarDefaults.smallTopAppBarColors(
+            containerColor = MaterialTheme.colorScheme.background
+        ),
     )
 }
 

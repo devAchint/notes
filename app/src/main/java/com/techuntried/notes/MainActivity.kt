@@ -25,7 +25,7 @@ class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {
-            NotesTheme {
+            NotesTheme(true) {
                 val navController = rememberNavController()
                 App(navController = navController)
             }
@@ -37,16 +37,13 @@ class MainActivity : ComponentActivity() {
 fun App(navController: NavHostController) {
     NavHost(navController = navController, startDestination = Screens.HomeScreen.route) {
         composable(Screens.HomeScreen.route,
-            enterTransition = {
-                return@composable fadeIn(tween(1000))
-            },
             exitTransition = {
                 return@composable slideOutOfContainer(
-                    AnimatedContentTransitionScope.SlideDirection.Start, tween(700)
+                    AnimatedContentTransitionScope.SlideDirection.Start, tween(500)
                 )
             }, popEnterTransition = {
                 return@composable slideIntoContainer(
-                    AnimatedContentTransitionScope.SlideDirection.End, tween(700)
+                    AnimatedContentTransitionScope.SlideDirection.End, tween(500)
                 )
             }
         )
@@ -66,12 +63,12 @@ fun App(navController: NavHostController) {
         composable(Screens.NoteScreen.route,
             enterTransition = {
                 return@composable slideIntoContainer(
-                    AnimatedContentTransitionScope.SlideDirection.Start, tween(700)
+                    AnimatedContentTransitionScope.SlideDirection.Start, tween(500)
                 )
             },
             popExitTransition = {
                 return@composable slideOutOfContainer(
-                    AnimatedContentTransitionScope.SlideDirection.End, tween(700)
+                    AnimatedContentTransitionScope.SlideDirection.End, tween(500)
                 )
             },
             arguments = listOf(
