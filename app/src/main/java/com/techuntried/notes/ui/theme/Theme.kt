@@ -23,7 +23,7 @@ private val DarkColorScheme = darkColorScheme(
 private val LightColorScheme = lightColorScheme(
     primary = mainColor,
     secondary = Color.White,
-    tertiary = Color.Gray,
+    tertiary = Color.Gray.copy(alpha = 0.5f),
     background = Color.Black,
     onTertiaryContainer = mainColor
 )

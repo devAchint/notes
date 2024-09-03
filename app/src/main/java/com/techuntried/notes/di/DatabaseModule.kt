@@ -2,7 +2,7 @@ package com.techuntried.notes.di
 
 import android.content.Context
 import androidx.room.Room
-import com.techuntried.notes.database.NotesDatabase
+import com.techuntried.notes.data.database.NotesDatabase
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
